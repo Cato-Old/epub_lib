@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from factory import Faker
 
-from app.domain import Paragraph
+from app.domain import Paragraph, ParagraphType
 
 
 def get_provider(locale: str = None):
@@ -32,3 +32,13 @@ class ParagraphTest(TestCase):
     def test_raises_when_initialized_with_multiline_string(self):
         with self.assertRaises(ValueError):
             Paragraph(self.fake_text.generate())
+
+    def test_set_paragraph_type_on_initialization(self):
+        test_parameters = {
+            ParagraphType.CONTINUATION: self.fake_sentence.generate(),
+            ParagraphType.INDENT: f'$>{self.fake_sentence.generate()}',
+        }
+        for expected_type, content in test_parameters.items():
+            with self.subTest(expected_type):
+                paragraph = Paragraph(content)
+                self.assertIs(paragraph.type, expected_type)
