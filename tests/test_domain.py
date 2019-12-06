@@ -11,8 +11,13 @@ def get_provider(locale: str = None):
     base_provider = import_module(f'faker.providers.lorem.{locale}')
 
     class Provider(base_provider.Provider):
-        def text_with_newline(self):
-            return f'{self.paragraph()}\n{self.paragraph()}'
+        def text_with_newline(self, par_num=2):
+            par = self.paragraph
+            return '\n'.join(f'{par()}' for _ in range(par_num+1))
+
+        def marked_text_with_newline(self, prefixes) -> str:
+            par = self.paragraph
+            return '\n'.join(f'{prefix}{par()}' for prefix in prefixes)
 
     return Provider
 
