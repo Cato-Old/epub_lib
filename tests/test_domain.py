@@ -23,6 +23,10 @@ class ParagraphTest(TestCase):
         faker.add_provider(get_provider())
         self.fake_sentence = faker('sentence')
         self.fake_text = faker('text_with_newline')
+        self.paragraph_test_params = [
+            (ParagraphType.CONTINUATION, self.fake_sentence.generate()),
+            (ParagraphType.INDENT, f'$>{self.fake_sentence.generate()}'),
+        ]
 
     def test_can_initialize_with_passing_oneline_string(self) -> None:
         payload = self.fake_sentence.generate()
@@ -34,11 +38,7 @@ class ParagraphTest(TestCase):
             Paragraph(self.fake_text.generate())
 
     def test_set_paragraph_type_on_initialization(self):
-        test_parameters = {
-            ParagraphType.CONTINUATION: self.fake_sentence.generate(),
-            ParagraphType.INDENT: f'$>{self.fake_sentence.generate()}',
-        }
-        for expected_type, content in test_parameters.items():
+        for expected_type, content in self.paragraph_test_params:
             with self.subTest(expected_type):
                 paragraph = Paragraph(content)
                 self.assertIs(paragraph.type, expected_type)
