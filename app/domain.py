@@ -25,3 +25,5 @@ class Paragraph:
             if re.fullmatch(paragraph_type.pattern, marker):
                 return paragraph_type
 
+    def dump(self) -> str:
+        return self.type.template.format(content=self.content)
