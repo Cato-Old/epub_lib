@@ -27,3 +27,7 @@ class Paragraph:
 
     def dump(self) -> str:
         return self.type.template.format(content=self.content)
+
+
+class Page:
+    pass

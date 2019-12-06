@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from factory import Faker
 
-from app.domain import Paragraph, ParagraphType
+from app.domain import Paragraph, ParagraphType, Page
 
 
 def get_provider(locale: str = None):
@@ -57,3 +57,8 @@ class ParagraphTest(TestCase):
                 paragraph = Paragraph(content)
                 actual = paragraph.dump()
                 self.assertRegex(actual, exp_regex)
+
+
+class PageTest(TestCase):
+    def test_can_import_class(self) -> None:
+        Page
