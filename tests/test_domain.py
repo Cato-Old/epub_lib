@@ -1,4 +1,5 @@
 from importlib import import_module
+from typing import Type
 from unittest import TestCase
 
 from factory import Faker
@@ -6,7 +7,7 @@ from factory import Faker
 from app.domain import Paragraph, ParagraphType, Page
 
 
-def get_provider(locale: str = None):
+def get_faker_with_provider(locale: str = None) -> Type[Faker]:
     locale = locale if locale else 'en_US'
     base_provider = import_module(f'faker.providers.lorem.{locale}')
 
@@ -24,13 +25,14 @@ def get_provider(locale: str = None):
             content = self.marked_text_with_newline(['', '$>', '$>'])
             return '\n'.join((mark, content))
 
-    return Provider
+    faker = Faker
+    faker.add_provider(Provider)
+    return faker
 
 
 class ParagraphTest(TestCase):
     def setUp(self) -> None:
-        faker = Faker
-        faker.add_provider(get_provider())
+        faker = get_faker_with_provider()
         self.fake_sentence = faker('sentence')
         self.fake_text = faker('text_with_newline')
         self.paragraph_test_params = [
