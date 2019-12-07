@@ -20,8 +20,8 @@ def get_faker_with_provider(locale: str = None) -> Type[Faker]:
             par = self.paragraph
             return '\n'.join(f'{prefix}{par()}' for prefix in prefixes)
 
-        def page(self):
-            mark = f'Str{self.random_int(1, 500)}'
+        def page(self, num=None):
+            mark = f'Str{num or self.random_int(1, 500)}'
             content = self.marked_text_with_newline(['', '$>', '$>'])
             return '\n'.join((mark, content))
 
@@ -72,5 +72,11 @@ class ParagraphTest(TestCase):
 
 
 class PageTest(TestCase):
-    def test_can_import_class(self) -> None:
-        Page
+    def setUp(self):
+        faker = get_faker_with_provider()
+        self.fake_page = faker('page')
+
+    def test_set_page_number_on_initialization(self) -> None:
+        num = Faker('random_int', min=1, max=500).generate()
+        page = Page(self.fake_page.generate(extra_kwargs={'num': num}))
+        self.assertEqual(num, page.number)

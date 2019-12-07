@@ -30,4 +30,10 @@ class Paragraph:
 
 
 class Page:
-    pass
+    def __init__(self, raw_text: str):
+        self.number = self._extract_page_number(raw_text)
+
+    def _extract_page_number(self, raw_text: str) -> int:
+        page_def = raw_text.split('\n')[0]
+        num_str = page_def[3:]
+        return int(num_str)
