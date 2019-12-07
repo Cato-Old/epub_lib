@@ -32,30 +32,28 @@ def get_faker_with_provider(locale: str = None) -> Type[Faker]:
 
 class ParagraphTest(TestCase):
     def setUp(self) -> None:
-        faker = get_faker_with_provider()
-        self.fake_sentence = faker('sentence')
-        self.fake_text = faker('text_with_newline')
+        self.faker = get_faker_with_provider()
         self.paragraph_test_params = [
             (
                 ParagraphType.CONTINUATION,
-                self.fake_sentence.generate(),
+                self.faker('sentence').generate(),
                 '<p>.+</p>'
             ),
             (
                 ParagraphType.INDENT,
-                f'$>{self.fake_sentence.generate()}',
+                f'$>{self.faker("sentence").generate()}',
                 '<p class="a2">.+</p>'
             ),
         ]
 
     def test_can_initialize_with_passing_oneline_string(self) -> None:
-        payload = self.fake_sentence.generate()
+        payload = self.faker('sentence').generate()
         paragraph = Paragraph(payload)
         self.assertEqual(payload, paragraph.content)
 
     def test_raises_when_initialized_with_multiline_string(self):
         with self.assertRaises(ValueError):
-            Paragraph(self.fake_text.generate())
+            Paragraph(self.faker('text_with_newline').generate())
 
     def test_set_paragraph_type_on_initialization(self):
         for expected_type, content, _ in self.paragraph_test_params:
@@ -73,10 +71,10 @@ class ParagraphTest(TestCase):
 
 class PageTest(TestCase):
     def setUp(self):
-        faker = get_faker_with_provider()
-        self.fake_page = faker('page')
+        self.faker = get_faker_with_provider()
 
     def test_set_page_number_on_initialization(self) -> None:
-        num = Faker('random_int', min=1, max=500).generate()
-        page = Page(self.fake_page.generate(extra_kwargs={'num': num}))
-        self.assertEqual(num, page.number)
+        expected_number = self.faker('random_int', min=1, max=500).generate()
+        raw_page = self.faker('page', num=expected_number).generate()
+        page = Page(raw_page)
+        self.assertEqual(expected_number, page.number)
