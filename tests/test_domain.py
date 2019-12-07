@@ -19,6 +19,11 @@ def get_provider(locale: str = None):
             par = self.paragraph
             return '\n'.join(f'{prefix}{par()}' for prefix in prefixes)
 
+        def page(self):
+            mark = f'Str{self.random_int(1, 500)}'
+            content = self.marked_text_with_newline(['', '$>', '$>'])
+            return '\n'.join((mark, content))
+
     return Provider
 
 
