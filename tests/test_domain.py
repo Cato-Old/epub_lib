@@ -78,3 +78,13 @@ class PageTest(TestCase):
         raw_page = self.faker('page', num=expected_number).generate()
         page = Page(raw_page)
         self.assertEqual(expected_number, page.number)
+
+    def test_raises_when_initialized_with_invalid_page_number(self) -> None:
+        exception_msg = r'.+ is not a page number'
+        with self.assertRaisesRegex(ValueError, exception_msg):
+            Page(self.faker('page', num='not_a_number').generate())
+
+    def test_raises_when_initialized_without_page_number(self) -> None:
+        exception_msg = r'.+ is not a page description'
+        with self.assertRaisesRegex(ValueError, exception_msg):
+            Page(self.faker('text_with_newline').generate())

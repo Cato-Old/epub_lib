@@ -34,6 +34,13 @@ class Page:
         self.number = self._extract_page_number(raw_text)
 
     def _extract_page_number(self, raw_text: str) -> int:
-        page_def = raw_text.split('\n')[0]
-        num_str = page_def[3:]
+        page_desc = raw_text.split('\n')[0]
+        self._validate_page_description(page_desc)
+        num_str = page_desc[3:]
         return int(num_str)
+
+    def _validate_page_description(self, page_desc: str) -> None:
+        if 'Str' != page_desc[:3]:
+            raise ValueError(f'{page_desc} is not a page description')
+        if not re.fullmatch(r'\d{1,4}', page_desc[3:]):
+            raise ValueError(f'{page_desc[3:]} is not a page number')
