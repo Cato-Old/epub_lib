@@ -20,9 +20,10 @@ def get_faker_with_provider(locale: str = None) -> Type[Faker]:
             par = self.paragraph
             return '\n'.join(f'{prefix}{par()}' for prefix in prefixes)
 
-        def page(self, num=None):
+        def page(self, num=None, prefixes=None):
+            prefixes = prefixes if prefixes is not None else ['', '$>', '$>']
             mark = f'Str{num or self.random_int(1, 500)}'
-            content = self.marked_text_with_newline(['', '$>', '$>'])
+            content = self.marked_text_with_newline(prefixes)
             return '\n'.join((mark, content))
 
     faker = Faker
@@ -88,3 +89,15 @@ class PageTest(TestCase):
         exception_msg = r'.+ is not a page description'
         with self.assertRaisesRegex(ValueError, exception_msg):
             Page(self.faker('text_with_newline').generate())
+
+    def test_set_paragraphs_on_initialization(self) -> None:
+        prefixes_map = {
+            '$>': ParagraphType.INDENT,
+            '': ParagraphType.CONTINUATION,
+        }
+        prefixes = ['', '$>', '$>']
+        page = Page(self.faker('page', prefixes=prefixes).generate())
+        self.assertListEqual(
+            [paragraph.type for paragraph in page.paragraphs],
+            [prefixes_map[p] for p in prefixes]
+        )

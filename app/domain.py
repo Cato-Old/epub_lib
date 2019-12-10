@@ -32,6 +32,7 @@ class Paragraph:
 class Page:
     def __init__(self, raw_text: str):
         self.number = self._extract_page_number(raw_text)
+        self.paragraphs = self._build_paragraphs_list(raw_text)
 
     def _extract_page_number(self, raw_text: str) -> int:
         page_desc = raw_text.split('\n')[0]
@@ -44,3 +45,7 @@ class Page:
             raise ValueError(f'{page_desc} is not a page description')
         if not re.fullmatch(r'\d{1,4}', page_desc[3:]):
             raise ValueError(f'{page_desc[3:]} is not a page number')
+
+    def _build_paragraphs_list(self, raw_text: str) -> list:
+        raw_paragraphs = raw_text.split('\n')[1:]
+        return [Paragraph(par) for par in raw_paragraphs]
