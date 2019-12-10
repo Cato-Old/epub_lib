@@ -101,3 +101,9 @@ class PageTest(TestCase):
             [paragraph.type for paragraph in page.paragraphs],
             [prefixes_map[p] for p in prefixes]
         )
+
+    def test_dumps_paragraphs_to_accurate_string(self) -> None:
+        prefixes = ['', '$>', '$>']
+        page = Page(self.faker('page', prefixes=prefixes).generate())
+        expected = r'<p>.+</p>\n<p class="a2">.+</p>\n<p class="a2">.+</p>'
+        self.assertRegex(page.dump(), expected)

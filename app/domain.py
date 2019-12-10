@@ -49,3 +49,6 @@ class Page:
     def _build_paragraphs_list(self, raw_text: str) -> list:
         raw_paragraphs = raw_text.split('\n')[1:]
         return [Paragraph(par) for par in raw_paragraphs]
+
+    def dump(self) -> str:
+        return '\n'.join(par.dump() for par in self.paragraphs)
