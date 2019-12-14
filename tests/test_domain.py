@@ -6,7 +6,7 @@ from unittest import TestCase
 
 from factory import Faker
 
-from app.domain import Paragraph, ParagraphType, Page
+from app.domain import Paragraph, ParagraphType, Page, Book
 
 
 def get_faker_with_provider(locale: str = None) -> Type[Faker]:
@@ -133,3 +133,23 @@ class PageTest(TestCase):
                 os.remove(file)
 
 
+class BookTest(TestCase):
+    def setUp(self) -> None:
+        self.faker = get_faker_with_provider()
+
+    def test_can_be_initialized_from_file(self) -> None:
+        page_numbers = [
+            self.faker('random_int', min=1, max=500).generate()
+            for _ in range(3)
+        ]
+        pages = '\n'.join(
+            self.faker('page', num=number).generate()
+            for number in page_numbers
+        )
+        with open('pages.txt', 'w') as f:
+            f.write(pages)
+        book = Book('pages.txt')
+        self.assertListEqual(page_numbers, [p.number for p in book.pages])
+
+    def tearDown(self) -> None:
+        os.remove('pages.txt')

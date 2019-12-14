@@ -61,3 +61,21 @@ class Page:
             f.write(template.substitute(
                 page_number=self.number, content=self.dump()
             ))
+
+
+class Book:
+    def __init__(self, path: str) -> None:
+        with open(path, 'r') as file:
+            raw_text = file.read()
+        self.pages = self._build_pages_list(raw_text)
+
+    def _build_pages_list(self, raw_text: str) -> list:
+        lines = raw_text.split('\n')
+        markers = [line for line in lines if re.fullmatch(r'Str\d{1,4}', line)]
+        markers_indices = [raw_text.index(marker) for marker in markers]
+        markers_indices.append(len(raw_text))
+        raw_pages = []
+        for begin, end in zip(markers_indices, markers_indices[1:]):
+            raw_pages.append(raw_text[begin:end])
+        return [Page(raw_text) for raw_text in raw_pages]
+
