@@ -1,4 +1,6 @@
+import os
 from importlib import import_module
+from string import Template
 from typing import Type
 from unittest import TestCase
 
@@ -107,3 +109,25 @@ class PageTest(TestCase):
         page = Page(self.faker('page', prefixes=prefixes).generate())
         expected = r'<p>.+</p>\n<p class="a2">.+</p>\n<p class="a2">.+</p>'
         self.assertRegex(page.dump(), expected)
+
+    def test_dumps_page_to_file(self) -> None:
+        page_num = self.faker('random_int', min=1, max=500).generate()
+        prefixes = ['', '$>', '$>']
+        page = Page(
+            self.faker('page', num=page_num, prefixes=prefixes).generate(),
+        )
+        content = page.dump()
+        with open('../resources/template.xhtml', 'r') as f:
+            template = Template(f.read())
+        expected = template.substitute(page_number=page_num, content=content)
+        page.dump_to_file()
+        with open(f'{page_num}.xhtml', 'r') as f:
+            actual = f.read()
+        self.assertEqual(expected, actual)
+
+    def tearDown(self):
+        for file in os.listdir(os.getcwd()):
+            if '.xhtml' in file:
+                os.remove(file)
+
+

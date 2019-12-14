@@ -1,5 +1,6 @@
 import re
 from enum import Enum
+from string import Template
 
 
 class ParagraphType(Enum):
@@ -52,3 +53,11 @@ class Page:
 
     def dump(self) -> str:
         return '\n'.join(par.dump() for par in self.paragraphs)
+
+    def dump_to_file(self) -> None:
+        with open('../resources/template.xhtml', 'r') as f:
+            template = Template(f.read())
+        with open(f'{self.number}.xhtml', 'w') as f:
+            f.write(template.substitute(
+                page_number=self.number, content=self.dump()
+            ))
