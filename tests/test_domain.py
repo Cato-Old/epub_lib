@@ -75,12 +75,13 @@ class ParagraphTest(TestCase):
 class PageTest(TestCase):
     def setUp(self):
         self.faker = get_faker_with_provider()
+        self.expected_number = self.faker(
+            'random_int', min=1, max=500
+        ).generate()
 
     def test_set_page_number_on_initialization(self) -> None:
-        expected_number = self.faker('random_int', min=1, max=500).generate()
-        raw_page = self.faker('page', num=expected_number).generate()
-        page = Page(raw_page)
-        self.assertEqual(expected_number, page.number)
+        raw_page = self.faker('page', num=self.expected_number).generate()
+        self.assertEqual(self.expected_number, Page(raw_page).number)
 
     def test_raises_when_initialized_with_invalid_page_number(self) -> None:
         exception_msg = r'.+ is not a page number'
@@ -111,17 +112,18 @@ class PageTest(TestCase):
         self.assertRegex(page.dump(), expected)
 
     def test_dumps_page_to_file(self) -> None:
-        page_num = self.faker('random_int', min=1, max=500).generate()
         prefixes = ['', '$>', '$>']
-        page = Page(
-            self.faker('page', num=page_num, prefixes=prefixes).generate(),
-        )
+        page = Page(self.faker(
+            'page', num=self.expected_number, prefixes=prefixes
+        ).generate())
         content = page.dump()
         with open('../resources/template.xhtml', 'r') as f:
             template = Template(f.read())
-        expected = template.substitute(page_number=page_num, content=content)
+        expected = template.substitute(
+            page_number=self.expected_number, content=content,
+        )
         page.dump_to_file()
-        with open(f'{page_num}.xhtml', 'r') as f:
+        with open(f'{self.expected_number}.xhtml', 'r') as f:
             actual = f.read()
         self.assertEqual(expected, actual)
 
