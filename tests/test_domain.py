@@ -142,14 +142,17 @@ class BookTest(TestCase):
             self.faker('random_int', min=1, max=500).generate()
             for _ in range(3)
         ]
+        book = self._build_book(page_numbers)
+        self.assertListEqual(page_numbers, [p.number for p in book.pages])
+
+    def _build_book(self, page_numbers: list) -> Book:
         pages = '\n'.join(
             self.faker('page', num=number).generate()
             for number in page_numbers
         )
         with open('pages.txt', 'w') as f:
             f.write(pages)
-        book = Book('pages.txt')
-        self.assertListEqual(page_numbers, [p.number for p in book.pages])
+        return Book('pages.txt')
 
     def tearDown(self) -> None:
         os.remove('pages.txt')
