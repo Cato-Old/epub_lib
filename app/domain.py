@@ -76,6 +76,11 @@ class Book:
         markers_indices.append(len(raw_text))
         raw_pages = []
         for begin, end in zip(markers_indices, markers_indices[1:]):
+            end = end-1 if raw_text[end-1] == '\n' else end
             raw_pages.append(raw_text[begin:end])
         return [Page(raw_text) for raw_text in raw_pages]
+
+    def dump(self) -> None:
+        for page in self.pages:
+            page.dump_to_file()
 

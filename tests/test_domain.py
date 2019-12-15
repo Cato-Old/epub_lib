@@ -145,6 +145,18 @@ class BookTest(TestCase):
         book = self._build_book(page_numbers)
         self.assertListEqual(page_numbers, [p.number for p in book.pages])
 
+    def test_dumps_pages_to_files(self) -> None:
+        page_numbers = [
+            self.faker('random_int', min=1, max=500).generate()
+            for _ in range(3)
+        ]
+        book = self._build_book(page_numbers)
+        book.dump()
+        self.assertSetEqual(
+            {int(f[:-6]) for f in os.listdir(os.getcwd()) if '.xhtml' in f},
+            set(page_numbers)
+        )
+
     def _build_book(self, page_numbers: list) -> Book:
         pages = '\n'.join(
             self.faker('page', num=number).generate()
@@ -156,3 +168,6 @@ class BookTest(TestCase):
 
     def tearDown(self) -> None:
         os.remove('pages.txt')
+        for file in os.listdir(os.getcwd()):
+            if '.xhtml' in file:
+                os.remove(file)
