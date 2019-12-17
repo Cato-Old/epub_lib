@@ -40,13 +40,18 @@ class ParagraphTest(TestCase):
             (
                 ParagraphType.CONTINUATION,
                 self.faker('sentence').generate(),
-                '<p>.+</p>'
+                '<p>.+</p>',
             ),
             (
                 ParagraphType.INDENT,
                 f'$>{self.faker("sentence").generate()}',
-                '<p class="a2">.+</p>'
+                '<p class="a2">.+</p>',
             ),
+            (
+                ParagraphType.CHAPTER_HEADER,
+                f'$h2>{self.faker("sentence").generate()}',
+                '<h2>.+</h2>',
+            )
         ]
 
     def test_can_initialize_with_passing_oneline_string(self) -> None:

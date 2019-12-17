@@ -6,6 +6,7 @@ from string import Template
 class ParagraphType(Enum):
     CONTINUATION = (1, r'[^\$]', '<p>{content}</p>')
     INDENT = (2, r'\$>', '<p class="a2">{content}</p>')
+    CHAPTER_HEADER = (4, r'\$h2>', '<h2>{content}</h2>')
 
     def __init__(self, ind, pattern, template):
         self.ind = ind
