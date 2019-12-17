@@ -50,7 +50,7 @@ class ParagraphTest(TestCase):
             (
                 ParagraphType.CHAPTER_HEADER,
                 f'$h2>{self.faker("sentence").generate()}',
-                '<h2>.+</h2>',
+                r'<h2>[^\$].+</h2>',
             )
         ]
 

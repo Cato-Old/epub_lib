@@ -18,14 +18,20 @@ class Paragraph:
     def __init__(self, raw_text: str):
         if '\n' in raw_text:
             raise ValueError
-        self.content = raw_text
         self.type = self._recognize_paragraph_type(raw_text)
+        self.content = self._process_raw_text(raw_text)
 
     def _recognize_paragraph_type(self, raw_text: str) -> ParagraphType:
         for paragraph_type in ParagraphType:
             marker = raw_text[0:paragraph_type.ind]
             if re.fullmatch(paragraph_type.pattern, marker):
                 return paragraph_type
+
+    def _process_raw_text(self, raw_text: str) -> str:
+        if self.type == ParagraphType.CHAPTER_HEADER:
+            return raw_text[4:]
+        else:
+            return raw_text
 
     def dump(self) -> str:
         return self.type.template.format(content=self.content)
