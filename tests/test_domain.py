@@ -3,6 +3,7 @@ from importlib import import_module
 from string import Template
 from typing import Type
 from unittest import TestCase
+from unittest.mock import Mock
 
 from factory import Faker
 
@@ -80,8 +81,9 @@ class ParagraphTest(TestCase):
     def test_set_paragraph_type_on_initialization(self):
         for expected_type, content, _ in self.paragraph_test_params:
             with self.subTest(expected_type):
-                paragraph = Paragraph(content)
-                self.assertIs(paragraph.type, expected_type)
+                mock = Mock()
+                Paragraph(content, paragraph_type=mock)
+                mock.recognize.assert_called_once_with(content)
 
     def test_dumps_to_accurate_string(self):
         for tested_type, content, exp_regex in self.paragraph_test_params:

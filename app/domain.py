@@ -25,17 +25,15 @@ class ParagraphType(Enum):
 
 
 class Paragraph:
-    def __init__(self, raw_text: str) -> None:
+    def __init__(
+            self,
+            raw_text: str,
+            paragraph_type: Type[ParagraphType] = ParagraphType,
+    ) -> None:
         if '\n' in raw_text:
             raise ValueError
-        self.type = self._recognize_paragraph_type(raw_text)
+        self.type = paragraph_type.recognize(raw_text)
         self.content = self._process_raw_text(raw_text)
-
-    def _recognize_paragraph_type(self, raw_text: str) -> ParagraphType:
-        for paragraph_type in ParagraphType:
-            marker = raw_text[0:paragraph_type.ind]
-            if re.fullmatch(paragraph_type.pattern, marker):
-                return paragraph_type
 
     def _process_raw_text(self, raw_text: str) -> str:
         if self.type == ParagraphType.CHAPTER_HEADER:
