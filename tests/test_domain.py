@@ -9,6 +9,25 @@ from factory import Faker
 from app.domain import Paragraph, ParagraphType, Page, Book
 
 
+PARAGRAPH_TEST_PARAMS = [
+            (
+                ParagraphType.CONTINUATION,
+                Faker('sentence').generate(),
+                '<p>.+</p>',
+            ),
+            (
+                ParagraphType.INDENT,
+                f'$>{Faker("sentence").generate()}',
+                '<p class="a2">.+</p>',
+            ),
+            (
+                ParagraphType.CHAPTER_HEADER,
+                f'$h2>{Faker("sentence").generate()}',
+                r'<h2>[^\$].+</h2>',
+            )
+        ]
+
+
 def get_faker_with_provider(locale: str = None) -> Type[Faker]:
     locale = locale if locale else 'en_US'
     base_provider = import_module(f'faker.providers.lorem.{locale}')
@@ -33,26 +52,21 @@ def get_faker_with_provider(locale: str = None) -> Type[Faker]:
     return faker
 
 
+class ParagraphTypeTest(TestCase):
+    def setUp(self) -> None:
+        self.paragraph_test_params = PARAGRAPH_TEST_PARAMS
+
+    def test_recognizes_paragraph_type_based_on_raw_text(self) -> None:
+        for expected_type, content, _ in self.paragraph_test_params:
+            with self.subTest(expected_type):
+                paragraph_type = ParagraphType.recognize(content)
+                self.assertIs(paragraph_type, expected_type)
+
+
 class ParagraphTest(TestCase):
     def setUp(self) -> None:
         self.faker = get_faker_with_provider()
-        self.paragraph_test_params = [
-            (
-                ParagraphType.CONTINUATION,
-                self.faker('sentence').generate(),
-                '<p>.+</p>',
-            ),
-            (
-                ParagraphType.INDENT,
-                f'$>{self.faker("sentence").generate()}',
-                '<p class="a2">.+</p>',
-            ),
-            (
-                ParagraphType.CHAPTER_HEADER,
-                f'$h2>{self.faker("sentence").generate()}',
-                r'<h2>[^\$].+</h2>',
-            )
-        ]
+        self.paragraph_test_params = PARAGRAPH_TEST_PARAMS
 
     def test_can_initialize_with_passing_oneline_string(self) -> None:
         payload = self.faker('sentence').generate()

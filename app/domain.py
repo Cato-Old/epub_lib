@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import re
 from enum import Enum
 from string import Template
+from typing import Type
 
 
 class ParagraphType(Enum):
@@ -13,9 +16,16 @@ class ParagraphType(Enum):
         self.pattern = pattern
         self.template = template
 
+    @classmethod
+    def recognize(cls, raw_text: str) -> ParagraphType:
+        for paragraph_type in cls:
+            marker = raw_text[0:paragraph_type.ind]
+            if re.fullmatch(paragraph_type.pattern, marker):
+                return paragraph_type
+
 
 class Paragraph:
-    def __init__(self, raw_text: str):
+    def __init__(self, raw_text: str) -> None:
         if '\n' in raw_text:
             raise ValueError
         self.type = self._recognize_paragraph_type(raw_text)
