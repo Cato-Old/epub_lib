@@ -4,6 +4,7 @@ from string import Template
 from typing import Type
 from unittest import TestCase
 from unittest.mock import Mock
+from unittest.mock import patch
 
 from factory import Faker
 
@@ -138,7 +139,9 @@ class PageTest(TestCase):
         expected = r'<p>.+</p>\n<p class="a2">.+</p>\n<p class="a2">.+</p>'
         self.assertRegex(page.dump(), expected)
 
-    def test_dumps_page_to_file(self) -> None:
+    @patch('app.domain.Settings')
+    def test_dumps_page_to_file(self, mock_settings) -> None:
+        mock_settings.return_value.base_path = os.path.dirname(__file__)
         prefixes = ['', '$>', '$>']
         page = Page(self.faker(
             'page', num=self.expected_number, prefixes=prefixes

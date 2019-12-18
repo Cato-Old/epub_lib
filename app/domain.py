@@ -2,8 +2,11 @@ from __future__ import annotations
 
 import re
 from enum import Enum
+from os import path
 from string import Template
 from typing import Type
+
+from app.settings import Settings
 
 
 class ParagraphType(Enum):
@@ -71,7 +74,11 @@ class Page:
         return '\n'.join(par.dump() for par in self.paragraphs)
 
     def dump_to_file(self) -> None:
-        with open('../resources/template.xhtml', 'r') as f:
+        template_path = path.join(
+            Settings().base_path,
+            '../resources/template.xhtml',
+        )
+        with open(template_path, 'r') as f:
             template = Template(f.read())
         with open(f'{self.number}.xhtml', 'w') as f:
             f.write(template.substitute(
