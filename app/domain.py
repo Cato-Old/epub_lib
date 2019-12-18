@@ -10,6 +10,7 @@ class ParagraphType(Enum):
     CONTINUATION = (1, r'[^\$]', '<p>{content}</p>')
     INDENT = (2, r'\$>', '<p class="a2">{content}</p>')
     CHAPTER_HEADER = (4, r'\$h2>', '<h2>{content}</h2>')
+    INDENT_QUOTE = (7, r'\$cyt>\$>', '<p class="cyt a2">{content}</p>')
 
     def __init__(self, ind, pattern, template):
         self.ind = ind
@@ -36,8 +37,12 @@ class Paragraph:
         self.content = self._process_raw_text(raw_text)
 
     def _process_raw_text(self, raw_text: str) -> str:
-        if self.type == ParagraphType.CHAPTER_HEADER:
-            return raw_text[4:]
+        processable_types = (
+            ParagraphType.CHAPTER_HEADER,
+            ParagraphType.INDENT_QUOTE,
+        )
+        if self.type in processable_types:
+            return raw_text[self.type.ind:]
         else:
             return raw_text
 

@@ -25,6 +25,11 @@ PARAGRAPH_TEST_PARAMS = [
                 ParagraphType.CHAPTER_HEADER,
                 f'$h2>{Faker("sentence").generate()}',
                 r'<h2>[^\$].+</h2>',
+            ),
+            (
+                ParagraphType.INDENT_QUOTE,
+                f'$cyt>$>{Faker("sentence").generate()}',
+                r'<p class="cyt a2">[^\$].+</p>',
             )
         ]
 
