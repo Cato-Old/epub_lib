@@ -78,9 +78,9 @@ class Page:
             Settings().base_path,
             '../resources/template.xhtml',
         )
-        with open(template_path, 'r') as f:
+        with open(template_path, 'r', encoding='utf-8') as f:
             template = Template(f.read())
-        with open(f'{self.number}.xhtml', 'w') as f:
+        with open(f'{self.number}.xhtml', 'w', encoding='utf-8') as f:
             f.write(template.substitute(
                 page_number=self.number, content=self.dump()
             ))
@@ -88,7 +88,7 @@ class Page:
 
 class Book:
     def __init__(self, path: str) -> None:
-        with open(path, 'r') as file:
+        with open(path, 'r', encoding='utf-8') as file:
             raw_text = file.read()
         self.pages = self._build_pages_list(raw_text)
 
