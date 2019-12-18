@@ -19,7 +19,7 @@ PARAGRAPH_TEST_PARAMS = [
             (
                 ParagraphType.INDENT,
                 f'$>{Faker("sentence").generate()}',
-                '<p class="a2">.+</p>',
+                r'<p class="a2">[^\$].+</p>',
             ),
             (
                 ParagraphType.CHAPTER_HEADER,
@@ -87,6 +87,7 @@ class ParagraphTest(TestCase):
         for expected_type, content, _ in self.paragraph_test_params:
             with self.subTest(expected_type):
                 mock = Mock()
+                mock.recognize.return_value.ind = 3
                 Paragraph(content, paragraph_type=mock)
                 mock.recognize.assert_called_once_with(content)
 

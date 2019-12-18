@@ -37,14 +37,10 @@ class Paragraph:
         self.content = self._process_raw_text(raw_text)
 
     def _process_raw_text(self, raw_text: str) -> str:
-        processable_types = (
-            ParagraphType.CHAPTER_HEADER,
-            ParagraphType.INDENT_QUOTE,
-        )
-        if self.type in processable_types:
-            return raw_text[self.type.ind:]
-        else:
+        if self.type == ParagraphType.CONTINUATION:
             return raw_text
+        else:
+            return raw_text[self.type.ind:]
 
     def dump(self) -> str:
         return self.type.template.format(content=self.content)
