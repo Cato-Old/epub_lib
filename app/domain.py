@@ -34,10 +34,14 @@ class Paragraph:
             raw_text: str,
             paragraph_type: Type[ParagraphType] = ParagraphType,
     ) -> None:
-        if '\n' in raw_text:
-            raise ValueError
+        self._validate_raw_text(raw_text)
         self.type = paragraph_type.recognize(raw_text)
         self.content = self._process_raw_text(raw_text)
+
+    @staticmethod
+    def _validate_raw_text(raw_text: str) -> None:
+        if '\n' in raw_text:
+            raise ValueError
 
     def _process_raw_text(self, raw_text: str) -> str:
         if self.type == ParagraphType.CONTINUATION:
