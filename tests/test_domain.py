@@ -8,8 +8,9 @@ from unittest.mock import patch
 
 from factory import Faker
 
-from app.domain import Paragraph, Page, Book
+from app.domain import Book, Page, Paragraph
 from app.domain.paragraph_type import ParagraphType
+from app.domain.paragraph_type import ParagraphTypeRecognizer
 
 PARAGRAPH_TEST_PARAMS = [
             (
@@ -63,14 +64,15 @@ def get_faker_with_provider(locale: str = None) -> Type[Faker]:
     return faker
 
 
-class ParagraphTypeTest(TestCase):
+class ParagraphTypeRecognizerTest(TestCase):
     def setUp(self) -> None:
         self.params = PARAGRAPH_TEST_PARAMS
+        self.recognizer = ParagraphTypeRecognizer()
 
     def test_recognizes_paragraph_type_based_on_raw_text(self) -> None:
         for expected_type, content, _, _ in self.params:
             with self.subTest(expected_type):
-                paragraph_type = ParagraphType.recognize(content)
+                paragraph_type = self.recognizer.recognize(content)
                 self.assertIs(paragraph_type, expected_type)
 
 
@@ -93,7 +95,7 @@ class ParagraphTest(TestCase):
             with self.subTest(expected_type):
                 mock = Mock()
                 mock.recognize.return_value.ind = 3
-                Paragraph(content, paragraph_type=mock)
+                Paragraph(content, recognizer=mock)
                 mock.recognize.assert_called_once_with(content)
 
     def test_dumps_to_accurate_string(self):
@@ -144,7 +146,7 @@ class PageTest(TestCase):
         expected = r'<p>.+</p>\n<p class="a2">.+</p>\n<p class="a2">.+</p>'
         self.assertRegex(page.dump(), expected)
 
-    @patch('app.domain.Settings')
+    @patch('app.domain.domain.Settings')
     def test_dumps_page_to_file(self, mock_settings) -> None:
         mock_settings.return_value.base_path = os.path.dirname(__file__)
         prefixes = ['', '$>', '$>']
@@ -180,7 +182,7 @@ class BookTest(TestCase):
         book = self._build_book(page_numbers)
         self.assertListEqual(page_numbers, [p.number for p in book.pages])
 
-    @patch('app.domain.Settings')
+    @patch('app.domain.domain.Settings')
     def test_dumps_pages_to_files(self, mock_settings) -> None:
         mock_settings.return_value.base_path = os.path.dirname(__file__)
         page_numbers = [

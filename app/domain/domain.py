@@ -3,9 +3,8 @@ from __future__ import annotations
 import re
 from os import path
 from string import Template
-from typing import Type
-from app.domain.paragraph_type import ParagraphType
 
+from app.domain.paragraph_type import ParagraphTypeRecognizer
 from app.processing import ParagraphProcessor
 from app.settings import Settings
 
@@ -14,11 +13,11 @@ class Paragraph:
     def __init__(
             self,
             raw_text: str,
-            paragraph_type: Type[ParagraphType] = ParagraphType,
+            recognizer: ParagraphTypeRecognizer = ParagraphTypeRecognizer(),
             processor: ParagraphProcessor = ParagraphProcessor(),
     ) -> None:
         self._validate_raw_text(raw_text)
-        self.type = paragraph_type.recognize(raw_text)
+        self.type = recognizer.recognize(raw_text)
         self.content = processor.process(raw_text, self.type)
 
     @staticmethod

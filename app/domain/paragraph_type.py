@@ -13,9 +13,11 @@ class ParagraphType(Enum):
         self.pattern = pattern
         self.template = template
 
-    @classmethod
-    def recognize(cls, raw_text: str) -> ParagraphType:
-        for paragraph_type in cls:
+
+class ParagraphTypeRecognizer:
+    @staticmethod
+    def recognize(raw_text: str) -> ParagraphType:
+        for paragraph_type in ParagraphType:
             marker = raw_text[0:paragraph_type.ind]
             if re.fullmatch(paragraph_type.pattern, marker):
                 return paragraph_type
