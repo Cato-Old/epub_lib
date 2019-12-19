@@ -15,22 +15,26 @@ PARAGRAPH_TEST_PARAMS = [
             (
                 ParagraphType.CONTINUATION,
                 Faker('sentence').generate(),
-                '<p>.+</p>',
+                '.+',
+                '<p>{content}</p>',
             ),
             (
                 ParagraphType.INDENT,
                 f'$>{Faker("sentence").generate()}',
-                r'<p class="a2">[^\$].+</p>',
+                r'[^\$].+',
+                '<p class="a2">{content}</p>',
             ),
             (
                 ParagraphType.CHAPTER_HEADER,
                 f'$h2>{Faker("sentence").generate()}',
-                r'<h2>[^\$].+</h2>',
+                r'[^\$].+',
+                '<h2>{content}</h2>',
             ),
             (
                 ParagraphType.INDENT_QUOTE,
                 f'$cyt>$>{Faker("sentence").generate()}',
-                r'<p class="cyt a2">[^\$].+</p>',
+                r'[^\$].+',
+                r'<p class="cyt a2">{content}</p>',
             )
         ]
 
@@ -61,10 +65,10 @@ def get_faker_with_provider(locale: str = None) -> Type[Faker]:
 
 class ParagraphTypeTest(TestCase):
     def setUp(self) -> None:
-        self.paragraph_test_params = PARAGRAPH_TEST_PARAMS
+        self.params = PARAGRAPH_TEST_PARAMS
 
     def test_recognizes_paragraph_type_based_on_raw_text(self) -> None:
-        for expected_type, content, _ in self.paragraph_test_params:
+        for expected_type, content, _, _ in self.params:
             with self.subTest(expected_type):
                 paragraph_type = ParagraphType.recognize(content)
                 self.assertIs(paragraph_type, expected_type)
@@ -73,7 +77,7 @@ class ParagraphTypeTest(TestCase):
 class ParagraphTest(TestCase):
     def setUp(self) -> None:
         self.faker = get_faker_with_provider()
-        self.paragraph_test_params = PARAGRAPH_TEST_PARAMS
+        self.params = PARAGRAPH_TEST_PARAMS
 
     def test_can_initialize_with_passing_oneline_string(self) -> None:
         payload = self.faker('sentence').generate()
@@ -85,7 +89,7 @@ class ParagraphTest(TestCase):
             Paragraph(self.faker('text_with_newline').generate())
 
     def test_set_paragraph_type_on_initialization(self):
-        for expected_type, content, _ in self.paragraph_test_params:
+        for expected_type, content, _, _ in self.params:
             with self.subTest(expected_type):
                 mock = Mock()
                 mock.recognize.return_value.ind = 3
@@ -93,11 +97,12 @@ class ParagraphTest(TestCase):
                 mock.recognize.assert_called_once_with(content)
 
     def test_dumps_to_accurate_string(self):
-        for tested_type, content, exp_regex in self.paragraph_test_params:
+        for tested_type, content, regex_content, template in self.params:
             with self.subTest(tested_type):
                 paragraph = Paragraph(content)
                 actual = paragraph.dump()
-                self.assertRegex(actual, exp_regex)
+                expected = template.format(content=regex_content)
+                self.assertRegex(actual, expected)
 
 
 class PageTest(TestCase):
