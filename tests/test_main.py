@@ -16,7 +16,7 @@ class MainTest(TestCase):
         main()
         mock_book.return_value.dump.assert_called_once()
 
-    @patch('app.main.os.path.abspath', return_value='foo/bar/baz')
+    @patch('app.main.os.path.dirname', return_value='foo/bar/baz')
     def test_initiates_settings_singleton(self, mock_book, mock_os) -> None:
         main()
         self.assertEqual(Settings().base_path, 'foo/bar/baz')
