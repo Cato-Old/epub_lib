@@ -175,7 +175,9 @@ class BookTest(TestCase):
         book = self._build_book(page_numbers)
         self.assertListEqual(page_numbers, [p.number for p in book.pages])
 
-    def test_dumps_pages_to_files(self) -> None:
+    @patch('app.domain.Settings')
+    def test_dumps_pages_to_files(self, mock_settings) -> None:
+        mock_settings.return_value.base_path = os.path.dirname(__file__)
         page_numbers = [
             self.faker('random_int', min=1, max=500).generate()
             for _ in range(3)
