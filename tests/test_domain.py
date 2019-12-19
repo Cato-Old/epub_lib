@@ -8,8 +8,8 @@ from unittest.mock import patch
 
 from factory import Faker
 
-from app.domain import Paragraph, ParagraphType, Page, Book
-
+from app.domain import Paragraph, Page, Book
+from app.domain.paragraph_type import ParagraphType
 
 PARAGRAPH_TEST_PARAMS = [
             (

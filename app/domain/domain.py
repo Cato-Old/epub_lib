@@ -1,31 +1,13 @@
 from __future__ import annotations
 
 import re
-from enum import Enum
 from os import path
 from string import Template
 from typing import Type
+from app.domain.paragraph_type import ParagraphType
 
+from app.processing import ParagraphProcessor
 from app.settings import Settings
-
-
-class ParagraphType(Enum):
-    CONTINUATION = (1, r'[^\$]', '<p>{content}</p>')
-    INDENT = (2, r'\$>', '<p class="a2">{content}</p>')
-    CHAPTER_HEADER = (4, r'\$h2>', '<h2>{content}</h2>')
-    INDENT_QUOTE = (7, r'\$cyt>\$>', '<p class="cyt a2">{content}</p>')
-
-    def __init__(self, ind, pattern, template):
-        self.ind = ind
-        self.pattern = pattern
-        self.template = template
-
-    @classmethod
-    def recognize(cls, raw_text: str) -> ParagraphType:
-        for paragraph_type in cls:
-            marker = raw_text[0:paragraph_type.ind]
-            if re.fullmatch(paragraph_type.pattern, marker):
-                return paragraph_type
 
 
 class Paragraph:
@@ -33,21 +15,16 @@ class Paragraph:
             self,
             raw_text: str,
             paragraph_type: Type[ParagraphType] = ParagraphType,
+            processor: ParagraphProcessor = ParagraphProcessor(),
     ) -> None:
         self._validate_raw_text(raw_text)
         self.type = paragraph_type.recognize(raw_text)
-        self.content = self._process_raw_text(raw_text)
+        self.content = processor.process(raw_text, self.type)
 
     @staticmethod
     def _validate_raw_text(raw_text: str) -> None:
         if '\n' in raw_text:
             raise ValueError
-
-    def _process_raw_text(self, raw_text: str) -> str:
-        if self.type == ParagraphType.CONTINUATION:
-            return raw_text
-        else:
-            return raw_text[self.type.ind:]
 
     def dump(self) -> str:
         return self.type.template.format(content=self.content)

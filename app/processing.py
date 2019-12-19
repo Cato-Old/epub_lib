@@ -1,4 +1,4 @@
-from app.domain import ParagraphType
+from app.domain.paragraph_type import ParagraphType
 
 
 class ParagraphProcessor:
