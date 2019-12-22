@@ -5,7 +5,7 @@ from os import path
 from string import Template
 
 from app.domain.paragraph_type import ParagraphTypeRecognizer
-from app.processing import ParagraphProcessor
+from app.processing import ParagraphProcessor, ProcessedParagraph
 from app.settings import Settings
 
 
@@ -18,7 +18,8 @@ class Paragraph:
     ) -> None:
         self._validate_raw_text(raw_text)
         self.type = recognizer.recognize(raw_text)
-        self.content = processor.process(raw_text, self.type)
+        paragraph = ProcessedParagraph(raw_text, self.type)
+        self.content = processor.process(paragraph).text
 
     @staticmethod
     def _validate_raw_text(raw_text: str) -> None:
