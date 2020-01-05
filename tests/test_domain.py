@@ -36,6 +36,12 @@ PARAGRAPH_TEST_PARAMS = [
                 f'$cyt>$>{Faker("sentence").generate()}',
                 r'[^\$].+',
                 r'<p class="cyt a2">{content}</p>',
+            ),
+            (
+                ParagraphType.RIGHT_ALIGNED,
+                f'$r>{Faker("sentence").generate()}',
+                r'[^\$].+',
+                r'<p class="a2 r">{content}</p>'
             )
         ]
 
