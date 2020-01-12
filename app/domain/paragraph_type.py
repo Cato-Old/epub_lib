@@ -9,6 +9,7 @@ class ParagraphType(Enum):
     INDENT_QUOTE = (7, r'\$cyt>\$>', '<p class="cyt a2">{content}</p>')
     RIGHT_ALIGNED = (3, r'\$r>', '<p class="a2 r">{content}</p>')
     TOP_INDENTED = (7, r'\$t12>\$>', '<p class="t12 a2">{content}</p>')
+    RIGHT_ALIGNED_QUOTE = (8, r'\$cyt>\$r>', '<p class="cyt r">{content}</p>')
 
     def __init__(self, ind, pattern, template):
         self.ind = ind

@@ -48,6 +48,12 @@ PARAGRAPH_TEST_PARAMS = [
                 f'$t12>$>{Faker("sentence").generate()}',
                 r'[^\$].+',
                 r'<p class="t12 a2">{content}</p>',
+            ),
+            (
+                ParagraphType.RIGHT_ALIGNED_QUOTE,
+                f'$cyt>$r>{Faker("sentence").generate()}',
+                r'[^\$].+',
+                r'<p class="cyt r">{content}</p>',
             )
         ]
 
