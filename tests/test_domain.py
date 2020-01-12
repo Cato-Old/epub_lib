@@ -42,6 +42,12 @@ PARAGRAPH_TEST_PARAMS = [
                 f'$r>{Faker("sentence").generate()}',
                 r'[^\$].+',
                 r'<p class="a2 r">{content}</p>'
+            ),
+            (
+                ParagraphType.TOP_INDENTED,
+                f'$t12>$>{Faker("sentence").generate()}',
+                r'[^\$].+',
+                r'<p class="t12 a2">{content}</p>',
             )
         ]
 
